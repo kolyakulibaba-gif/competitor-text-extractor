@@ -1,0 +1,30 @@
+.progress-bar-track {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 999;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.progress-bar-track.active {
+  opacity: 1;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, var(--green-light), #4ade80);
+  border-radius: 0 2px 2px 0;
+  animation: progress-slide 1.8s ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(34, 196, 126, 0.6);
+}
+
+@keyframes progress-slide {
+  0%   { transform: translateX(-100%); width: 40%; }
+  50%  { width: 60%; }
+  100% { transform: translateX(300%); width: 40%; }
+}

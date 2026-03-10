@@ -1,0 +1,131 @@
+.url-bar-wrapper {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.url-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px 14px;
+  transition: border-color 0.2s ease;
+}
+
+.url-bar:focus-within {
+  border-color: rgba(34, 196, 126, 0.4);
+  box-shadow: 0 0 0 3px rgba(34, 196, 126, 0.06);
+}
+
+.url-bar-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.url-bar-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--white);
+  font-family: 'SF Mono', 'Fira Code', 'Menlo', monospace;
+  caret-color: var(--green-light);
+  min-width: 0;
+}
+
+.url-bar-input::placeholder {
+  color: var(--text-tertiary);
+  font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  font-size: 13.5px;
+}
+
+.url-bar-input:disabled {
+  opacity: 0.5;
+}
+
+.url-bar-clear {
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.url-bar-clear:hover {
+  color: var(--white);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.url-bar-btn {
+  flex-shrink: 0;
+  background: var(--green);
+  color: #fff;
+  border: none;
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.url-bar-btn:hover:not(:disabled) {
+  background: #1f8052;
+}
+
+.url-bar-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.url-bar-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.url-bar-btn.loading {
+  background: var(--green);
+  pointer-events: none;
+}
+
+.btn-arrow {
+  font-size: 14px;
+  transition: transform 0.15s;
+}
+
+.url-bar-btn:hover .btn-arrow {
+  transform: translateX(2px);
+}
+
+/* Spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

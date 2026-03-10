@@ -1,0 +1,255 @@
+.a4-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Source URL bar above sheet */
+.a4-source-url {
+  width: 100%;
+  max-width: 794px;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-label {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 10px;
+  flex-shrink: 0;
+  color: var(--text-tertiary);
+}
+
+.source-url {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #5a5a60;
+}
+
+/* Outer wrapper — holds sheet + copy button */
+.a4-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 794px;
+}
+
+/* The A4 sheet itself */
+.a4-sheet {
+  background: #ffffff;
+  border-radius: 4px;
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.6), 0 1px 4px rgba(0, 0, 0, 0.4);
+  padding: 54px 64px;
+  min-height: 480px;
+  width: 100%;
+  transition: opacity 0.3s ease;
+  overflow-x: hidden;
+}
+
+.a4-sheet.a4-loading {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ── TYPOGRAPHY inside A4 ── */
+.a4-sheet {
+  font-family: Georgia, Charter, 'Times New Roman', serif;
+  font-size: 15px;
+  line-height: 1.75;
+  color: #1a1a1a;
+}
+
+.a4-sheet h1 {
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin: 0 0 20px;
+  color: #0a0a0a;
+  letter-spacing: -0.01em;
+}
+
+.a4-sheet h2 {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+  margin: 32px 0 14px;
+  color: #111111;
+}
+
+.a4-sheet h3 {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.35;
+  margin: 26px 0 10px;
+  color: #1a1a1a;
+}
+
+.a4-sheet h4 {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 20px 0 8px;
+  color: #222222;
+}
+
+.a4-sheet p {
+  margin: 0 0 14px;
+  color: #1a1a1a;
+}
+
+.a4-sheet ul,
+.a4-sheet ol {
+  margin: 12px 0 16px;
+  padding-left: 26px;
+}
+
+.a4-sheet li {
+  margin-bottom: 6px;
+  line-height: 1.65;
+}
+
+.a4-sheet blockquote {
+  border-left: 3px solid #ccc;
+  margin: 20px 0;
+  padding: 10px 20px;
+  color: #555;
+  font-style: italic;
+}
+
+.a4-sheet strong, .a4-sheet b {
+  font-weight: 700;
+  color: #0a0a0a;
+}
+
+.a4-sheet em, .a4-sheet i {
+  font-style: italic;
+}
+
+.a4-sheet span {
+  /* links converted to spans */
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Tables */
+.a4-sheet table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 13.5px;
+  overflow-x: auto;
+  display: block;
+  max-width: 100%;
+}
+
+.a4-sheet thead {
+  background: #f5f5f5;
+}
+
+.a4-sheet th {
+  font-weight: 700;
+  font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  text-align: left;
+  color: #333;
+}
+
+.a4-sheet td {
+  padding: 9px 14px;
+  border: 1px solid #ddd;
+  vertical-align: top;
+  color: #222;
+}
+
+.a4-sheet tr:nth-child(even) td {
+  background: #fafafa;
+}
+
+.a4-sheet pre {
+  background: #f4f4f4;
+  border-radius: 6px;
+  padding: 14px 18px;
+  overflow-x: auto;
+  font-size: 13px;
+  margin: 16px 0;
+}
+
+.a4-sheet code {
+  font-family: 'SF Mono', 'Fira Code', 'Menlo', monospace;
+  font-size: 0.9em;
+  background: #f0f0f0;
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+/* ── PLACEHOLDER ── */
+.sheet-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  gap: 16px;
+  user-select: none;
+}
+
+.placeholder-icon {
+  color: #d0d0d0;
+}
+
+.placeholder-title {
+  font-size: 16px;
+  font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  color: #888;
+  font-weight: 500;
+  margin: 0;
+}
+
+.placeholder-sub {
+  font-size: 13px;
+  font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  color: #bbb;
+  margin: 0;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  .a4-sheet {
+    padding: 32px 24px;
+    border-radius: 0;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .a4-wrapper {
+    max-width: 100%;
+  }
+}
+
+/* ── EDITABLE MODE ── */
+.a4-sheet.a4-editable {
+  cursor: text;
+  outline: none;
+}
+
+.a4-sheet.a4-editable:focus {
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.6), 0 1px 4px rgba(0, 0, 0, 0.4),
+              0 0 0 2px rgba(34, 196, 126, 0.25);
+}
+
+/* When toolbar is present, remove top border-radius from sheet */
+.a4-wrapper--has-toolbar .a4-sheet {
+  border-radius: 0 0 4px 4px;
+}

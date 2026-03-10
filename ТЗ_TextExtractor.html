@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ТЗ — Competitor Text Extractor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;600&display=swap');
+
+  :root {
+    --black: #0a0a0a;
+    --off-black: #111111;
+    --dark-surface: #1a1a1a;
+    --card-bg: #1e1e1e;
+    --border: #2a2a2a;
+    --green: #1a6b45;
+    --green-light: #22c47e;
+    --green-muted: #145238;
+    --green-glow: rgba(34, 196, 126, 0.08);
+    --white: #f5f5f7;
+    --text-secondary: #8e8e93;
+    --text-tertiary: #48484a;
+    --accent-line: #22c47e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    background: var(--black);
+    color: var(--white);
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--off-black);
+    border-bottom: 1px solid var(--border);
+    padding: 0 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+
+  .header-logo {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--green-light);
+  }
+
+  .header-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    letter-spacing: 0.03em;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 60px 60px;
+    border-bottom: 1px solid var(--border);
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 24px;
+  }
+
+  .hero-label::before {
+    content: '';
+    display: block;
+    width: 20px;
+    height: 1px;
+    background: var(--green-light);
+  }
+
+  h1.title {
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+
+  h1.title strong {
+    font-weight: 600;
+    color: var(--white);
+  }
+
+  .hero-desc {
+    font-size: 17px;
+    color: var(--text-secondary);
+    max-width: 560px;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* ── META GRID ── */
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .meta-item {
+    background: var(--off-black);
+    padding: 28px 32px;
+  }
+
+  .meta-item:hover { background: var(--dark-surface); }
+
+  .meta-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .meta-value {
+    font-size: 15px;
+    color: var(--white);
+    font-weight: 400;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main-layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR NAV ── */
+  .sidebar {
+    position: sticky;
+    top: 52px;
+    height: calc(100vh - 52px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 40px 0;
+  }
+
+  .sidebar-section {
+    margin-bottom: 32px;
+  }
+
+  .sidebar-heading {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    padding: 0 24px 8px;
+  }
+
+  .nav-link {
+    display: block;
+    padding: 8px 24px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-link:hover {
+    color: var(--white);
+    background: var(--dark-surface);
+  }
+
+  .nav-link.active {
+    color: var(--green-light);
+    border-left-color: var(--green-light);
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 56px 64px;
+    max-width: 780px;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 72px;
+    scroll-margin-top: 72px;
+  }
+
+  .section-number {
+    font-size: 11px;
+    color: var(--green-light);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h2.section-title {
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3.sub-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--white);
+    margin: 32px 0 12px;
+  }
+
+  p {
+    color: #c0c0c5;
+    margin-bottom: 14px;
+    font-size: 15px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    margin-bottom: 8px;
+  }
+
+  .card p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* ── GREEN CALLOUT ── */
+  .callout {
+    background: var(--green-glow);
+    border: 1px solid var(--green-muted);
+    border-left: 3px solid var(--green-light);
+    border-radius: 8px;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+
+  .callout p {
+    margin: 0;
+    color: #a8e6c8;
+    font-size: 14px;
+  }
+
+  /* ── FEATURE LIST ── */
+  .feature-list {
+    list-style: none;
+    margin: 0 0 20px;
+  }
+
+  .feature-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    color: #c0c0c5;
+    line-height: 1.5;
+  }
+
+  .feature-list li:last-child { border-bottom: none; }
+
+  .feature-list li::before {
+    content: '→';
+    color: var(--green-light);
+    font-size: 13px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── STEP LIST ── */
+  .step-list {
+    list-style: none;
+    counter-reset: steps;
+  }
+
+  .step-list li {
+    counter-increment: steps;
+    display: flex;
+    gap: 18px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+
+  .step-list li:last-child { border-bottom: none; }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    background: var(--green-muted);
+    border: 1px solid var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--green-light);
+  }
+
+  .step-content strong {
+    display: block;
+    font-size: 14px;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .step-content span {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── TWO-COL GRID ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .spec-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+
+  .spec-card .label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .spec-card .value {
+    font-size: 14px;
+    color: var(--white);
+  }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid #2d2d2d;
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12.5px;
+    color: #a8d8a8;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+
+  .code-block .comment { color: #525252; }
+  .code-block .key { color: #79c0ff; }
+  .code-block .val { color: #a8d8a8; }
+
+  /* ── MOCKUP ── */
+  .mockup {
+    background: #111;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 24px 0;
+  }
+
+  .mockup-bar {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 7px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .mockup-bar-label {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .mockup-input {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 7px 12px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: 'SF Mono', monospace;
+  }
+
+  .mockup-btn {
+    background: var(--green);
+    color: #fff;
+    border: none;
+    padding: 7px 16px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+  }
+
+  .mockup-sheet {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 32px 36px;
+    min-height: 200px;
+  }
+
+  .mockup-h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 10px;
+    font-family: Georgia, serif;
+  }
+
+  .mockup-h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+    margin: 14px 0 6px;
+    font-family: Georgia, serif;
+  }
+
+  .mockup-p {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.6;
+    margin-bottom: 8px;
+    font-family: Georgia, serif;
+  }
+
+  .mockup-bullet {
+    font-size: 12px;
+    color: #444;
+    line-height: 1.7;
+    padding-left: 16px;
+    font-family: Georgia, serif;
+  }
+
+  .mockup-bullet li { margin-bottom: 2px; }
+
+  /* ── TABLE ── */
+  .spec-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    margin: 16px 0;
+  }
+
+  .spec-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-tertiary);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .spec-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: #c0c0c5;
+    vertical-align: top;
+  }
+
+  .spec-table tr:last-child td { border-bottom: none; }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--green-muted);
+    color: var(--green-light);
+    border: 1px solid var(--green);
+    letter-spacing: 0.03em;
+  }
+
+  .tag.gray {
+    background: #2a2a2a;
+    color: var(--text-secondary);
+    border-color: #3a3a3a;
+  }
+
+  /* ── RISK TABLE ── */
+  .risk-row-high td:first-child { color: #ff6b6b; }
+  .risk-row-mid td:first-child { color: #ffa94d; }
+  .risk-row-low td:first-child { color: var(--green-light); }
+
+  /* ── DIVIDER ── */
+  hr.section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 64px 0;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 64px;
+    text-align: center;
+    color: var(--text-tertiary);
+    font-size: 12px;
+    letter-spacing: 0.03em;
+  }
+
+  @media (max-width: 768px) {
+    .main-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; }
+    header, .hero, .content { padding-left: 24px; padding-right: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">Competitor Text Extractor</div>
+  <div class="header-meta">Техническое задание · v1.0</div>
+</header>
+
+<div class="hero">
+  <div class="hero-label">Техническое задание</div>
+  <h1 class="title"><strong>Competitor</strong><br>Text Extractor</h1>
+  <p class="hero-desc">Веб-приложение для извлечения семантически чистого текста с сайтов конкурентов с сохранением оригинального форматирования.</p>
+</div>
+
+<div class="meta-grid">
+  <div class="meta-item">
+    <div class="meta-label">Версия</div>
+    <div class="meta-value">1.0.0</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Тип</div>
+    <div class="meta-value">Web App</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Приоритет</div>
+    <div class="meta-value">Высокий</div>
+  </div>
+  <div class="meta-item">
+    <div class="meta-label">Статус</div>
+    <div class="meta-value">На разработку</div>
+  </div>
+</div>
+
+<div class="main-layout">
+
+  <nav class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Документ</div>
+      <a class="nav-link active" href="#overview">Обзор</a>
+      <a class="nav-link" href="#goals">Цели и задачи</a>
+      <a class="nav-link" href="#userflow">User Flow</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Функционал</div>
+      <a class="nav-link" href="#extractor">Экстрактор текста</a>
+      <a class="nav-link" href="#ui">Интерфейс</a>
+      <a class="nav-link" href="#design">Дизайн-система</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Технологии</div>
+      <a class="nav-link" href="#stack">Стек</a>
+      <a class="nav-link" href="#api">API / Backend</a>
+      <a class="nav-link" href="#risks">Риски</a>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-heading">Поставка</div>
+      <a class="nav-link" href="#acceptance">Критерии сдачи</a>
+      <a class="nav-link" href="#timeline">Сроки</a>
+    </div>
+  </nav>
+
+  <main class="content">
+
+    <!-- ── 1. OVERVIEW ── -->
+    <section class="section" id="overview">
+      <div class="section-number">01 / Обзор</div>
+      <h2 class="section-title">Описание продукта</h2>
+
+      <p>Приложение принимает URL страницы сайта-конкурента, автоматически извлекает только тематический текстовый контент страницы и отображает его в отформатированном виде в области просмотра, стилизованной под лист A4.</p>
+
+      <div class="callout">
+        <p>Ключевая задача — отделить смысловой текст страницы от всего «мусора»: навигации, рекламы, баннеров, сниппетов, футеров, блоков «О нас» и прочих элементов, не относящихся к теме конкретной статьи или страницы.</p>
+      </div>
+
+      <h3 class="sub-title">Целевая аудитория</h3>
+      <ul class="feature-list">
+        <li>SEO-копирайтеры и контент-редакторы, анализирующие материалы конкурентов</li>
+        <li>Контент-маркетологи, исследующие структуру и подачу конкурентного контента</li>
+        <li>Специалисты по iGaming-контенту для мультиязычных рынков</li>
+        <li>Команды, работающие с автоматизированными системами рерайтинга</li>
+      </ul>
+    </section>
+
+    <!-- ── 2. GOALS ── -->
+    <section class="section" id="goals">
+      <div class="section-number">02 / Цели</div>
+      <h2 class="section-title">Цели и задачи</h2>
+
+      <h3 class="sub-title">Основные цели</h3>
+      <ul class="feature-list">
+        <li>Дать пользователю мгновенный доступ к чистому тексту любой страницы без ручного копирования</li>
+        <li>Сохранить структуру документа (заголовки, списки, таблицы) для точного анализа</li>
+        <li>Исключить весь нетематический контент автоматически, без ручной фильтрации</li>
+        <li>Обеспечить комфортное чтение и визуальный анализ текста в форме листа A4</li>
+      </ul>
+
+      <h3 class="sub-title">Что должно быть в результате</h3>
+      <div class="two-col">
+        <div class="spec-card">
+          <div class="label">Включать</div>
+          <div class="value">H1–H4, параграфы, таблицы, маркированные и нумерованные списки, блочные цитаты</div>
+        </div>
+        <div class="spec-card">
+          <div class="label">Исключать</div>
+          <div class="value">Меню, хедер, футер, баннеры, реклама, CTA-кнопки, попапы, виджеты, блоки навигации, сайдбары, авторские блоки, социальные кнопки</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. USER FLOW ── -->
+    <section class="section" id="userflow">
+      <div class="section-number">03 / User Flow</div>
+      <h2 class="section-title">Пользовательский сценарий</h2>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Вставка ссылки</strong>
+            <span>Пользователь вставляет URL целевой страницы в строку ввода над областью A4.</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Запуск обработки</strong>
+            <span>Нажимает кнопку «Извлечь» или Enter. Отображается индикатор загрузки.</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Получение результата</strong>
+            <span>В области A4 появляется отформатированный текст страницы: с заголовками, списками и таблицами.</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Работа с текстом</strong>
+            <span>Пользователь читает, анализирует или копирует текст. Доступна кнопка «Копировать всё» и при необходимости — экспорт.</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ── 4. EXTRACTOR ── -->
+    <section class="section" id="extractor">
+      <div class="section-number">04 / Ядро</div>
+      <h2 class="section-title">Алгоритм извлечения текста</h2>
+
+      <h3 class="sub-title">4.1 Загрузка страницы</h3>
+      <p>Бэкенд получает URL, загружает HTML с использованием headless-браузера (Puppeteer) или прокси-запроса. Рендеринг JS обязателен, так как большинство современных сайтов подгружают контент динамически.</p>
+
+      <h3 class="sub-title">4.2 Фильтрация DOM — блоки к удалению</h3>
+      <p>Перед извлечением текста из DOM удаляются следующие категории элементов:</p>
+
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Категория</th>
+            <th>HTML-элементы / CSS-классы</th>
+            <th>Логика</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Навигация</td>
+            <td><code>nav</code>, <code>header</code>, <code>[role=navigation]</code></td>
+            <td>Удалить полностью</td>
+          </tr>
+          <tr>
+            <td>Футер</td>
+            <td><code>footer</code>, <code>[role=contentinfo]</code></td>
+            <td>Удалить полностью</td>
+          </tr>
+          <tr>
+            <td>Реклама / баннеры</td>
+            <td><code>.ad</code>, <code>.banner</code>, <code>[class*="advert"]</code>, <code>iframe</code>, <code>[data-ad]</code></td>
+            <td>Удалить полностью</td>
+          </tr>
+          <tr>
+            <td>Сайдбар</td>
+            <td><code>aside</code>, <code>.sidebar</code>, <code>[role=complementary]</code></td>
+            <td>Удалить полностью</td>
+          </tr>
+          <tr>
+            <td>Кнопки / CTA</td>
+            <td><code>button</code>, <code>.cta</code>, <code>[class*="btn"]</code>, <code>[type=submit]</code></td>
+            <td>Удалить</td>
+          </tr>
+          <tr>
+            <td>Попапы / оверлеи</td>
+            <td><code>[class*="popup"]</code>, <code>[class*="modal"]</code>, <code>[class*="overlay"]</code></td>
+            <td>Удалить</td>
+          </tr>
+          <tr>
+            <td>Соцсети / шаринг</td>
+            <td><code>.share</code>, <code>[class*="social"]</code>, <code>[class*="follow"]</code></td>
+            <td>Удалить</td>
+          </tr>
+          <tr>
+            <td>Авторский блок</td>
+            <td><code>[class*="author"]</code>, <code>[class*="byline"]</code></td>
+            <td>Удалить</td>
+          </tr>
+          <tr>
+            <td>Форма поиска</td>
+            <td><code>[role=search]</code>, <code>form[action*="search"]</code></td>
+            <td>Удалить</td>
+          </tr>
+          <tr>
+            <td>Комментарии</td>
+            <td><code>#comments</code>, <code>[class*="comment"]</code></td>
+            <td>Удалить</td>
+          </tr>
+          <tr>
+            <td>Cookie / GDPR</td>
+            <td><code>[class*="cookie"]</code>, <code>[id*="cookie"]</code></td>
+            <td>Удалить</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-title">4.3 Определение основного контента</h3>
+      <p>После удаления мусорных блоков применяется алгоритм выбора контентной зоны:</p>
+      <ul class="feature-list">
+        <li>Анализ элементов <code>article</code>, <code>main</code>, <code>[role=main]</code>, <code>.content</code> — приоритет в порядке перечисления</li>
+        <li>Если явный контейнер не найден — используется алгоритм на основе плотности текста (text density): выбирается блок с наибольшим соотношением текста к HTML-тегам</li>
+        <li>Резервный вариант: библиотека <strong>Readability.js</strong> (Mozilla) как fallback</li>
+      </ul>
+
+      <h3 class="sub-title">4.4 Структурное сохранение</h3>
+      <ul class="feature-list">
+        <li>Теги <code>h1</code>–<code>h4</code> конвертируются в соответствующие HTML-заголовки вывода</li>
+        <li>Теги <code>ul</code> / <code>ol</code> / <code>li</code> сохраняются с полной вложенностью</li>
+        <li>Тег <code>table</code> сохраняется со всеми ячейками, с адаптивной шириной под A4</li>
+        <li>Теги <code>strong</code>, <code>em</code>, <code>blockquote</code> сохраняются</li>
+        <li>Изображения, иконки, медиа — полностью удаляются</li>
+        <li>Гиперссылки: текст ссылок сохраняется, href удаляется (чистый текст)</li>
+      </ul>
+    </section>
+
+    <!-- ── 5. UI ── -->
+    <section class="section" id="ui">
+      <div class="section-number">05 / Интерфейс</div>
+      <h2 class="section-title">Структура UI</h2>
+
+      <h3 class="sub-title">Макет интерфейса (схема)</h3>
+
+      <div class="mockup">
+        <div class="mockup-bar">
+          <span class="mockup-bar-label">URL</span>
+          <div class="mockup-input">https://competitor.com/article/...</div>
+          <button class="mockup-btn">Извлечь →</button>
+        </div>
+        <div class="mockup-sheet">
+          <div class="mockup-h1">Лучшие онлайн-казино 2025 года</div>
+          <div class="mockup-p">Рынок онлайн-казино растёт с каждым годом. В этом материале мы рассматриваем ключевые критерии выбора платформы...</div>
+          <div class="mockup-h2">Критерии выбора казино</div>
+          <ul class="mockup-bullet">
+            <li>Наличие лицензии регулятора</li>
+            <li>Скорость выплат</li>
+            <li>Качество службы поддержки</li>
+          </ul>
+          <div class="mockup-h2">Топ-3 платформы</div>
+          <div class="mockup-p">Ниже представлены три наиболее популярных оператора по версии независимых рейтингов...</div>
+        </div>
+      </div>
+
+      <h3 class="sub-title">Компоненты интерфейса</h3>
+
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>Компонент</th>
+            <th>Описание</th>
+            <th>Поведение</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag">URL-строка</span></td>
+            <td>Поле ввода над листом A4. Placeholder: «Вставьте ссылку на страницу конкурента»</td>
+            <td>Enter или кнопка → запуск; автофокус при загрузке страницы</td>
+          </tr>
+          <tr>
+            <td><span class="tag">Кнопка «Извлечь»</span></td>
+            <td>Тёмно-зелёная CTA-кнопка справа от строки ввода</td>
+            <td>Состояния: default / loading (спиннер) / error</td>
+          </tr>
+          <tr>
+            <td><span class="tag">Область A4</span></td>
+            <td>Белый лист с тенью, ширина 794px (A4), вертикальный скролл</td>
+            <td>До извлечения — placeholder-текст. После — отформатированный контент</td>
+          </tr>
+          <tr>
+            <td><span class="tag">«Копировать»</span></td>
+            <td>Иконка/кнопка в правом верхнем углу листа</td>
+            <td>Копирует plain text в буфер. Подтверждение: «Скопировано ✓»</td>
+          </tr>
+          <tr>
+            <td><span class="tag">Счётчик слов</span></td>
+            <td>Строка под листом: «Слов: 1 240 · Знаков: 8 450»</td>
+            <td>Обновляется после каждого извлечения</td>
+          </tr>
+          <tr>
+            <td><span class="tag gray">Ошибка</span></td>
+            <td>Тост-уведомление над листом при ошибке загрузки или парсинга</td>
+            <td>Красная граница, текст ошибки, автозакрытие через 5 сек</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="sub-title">Дополнительные элементы управления</h3>
+      <ul class="feature-list">
+        <li>Кнопка «Очистить» — сбрасывает URL и контент листа</li>
+        <li>Отображение исходного URL над листом (мелким шрифтом, серый цвет) после извлечения</li>
+        <li>Индикатор прогресса (тонкая зелёная полоска вверху страницы) во время загрузки</li>
+      </ul>
+    </section>
+
+    <!-- ── 6. DESIGN ── -->
+    <section class="section" id="design">
+      <div class="section-number">06 / Дизайн</div>
+      <h2 class="section-title">Дизайн-система</h2>
+
+      <h3 class="sub-title">Цветовая палитра</h3>
+      <div class="two-col">
+        <div class="spec-card">
+          <div class="label">Фон страницы</div>
+          <div class="value" style="color:#888">#0a0a0a — Черный</div>
+        </div>
+        <div class="spec-card">
+          <div class="label">Лист A4 / Основная область</div>
+          <div class="value" style="color:#888">#FFFFFF — Белый</div>
+        </div>
+        <div class="spec-card">
+          <div class="label">Акцент / кнопки / иконки</div>
+          <div class="value" style="color:#22c47e">#1a6b45 — Тёмно-зелёный</div>
+        </div>
+        <div class="spec-card">
+          <div class="label">Подсветка / hover</div>
+          <div class="value" style="color:#22c47e">#22c47e — Зелёный светлый</div>
+        </div>
+      </div>
+
+      <h3 class="sub-title">Типографика</h3>
+      <ul class="feature-list">
+        <li>UI-шрифт: <strong>-apple-system / SF Pro / Helvetica Neue</strong> — системный стек Apple</li>
+        <li>Шрифт листа A4: <strong>Georgia</strong> или <strong>Charter</strong> — читабельный serif для контента</li>
+        <li>Размер тела текста в листе: 15–16px, межстрочный интервал 1.7</li>
+        <li>H1 в листе: 26px bold; H2: 20px bold; H3: 17px semi-bold; H4: 15px semi-bold</li>
+      </ul>
+
+      <h3 class="sub-title">Принципы дизайна</h3>
+      <div class="callout">
+        <p>Стиль — лаконичный, Apple-like. Никаких лишних декораций. Чёрный фон снижает усталость глаз при длительной работе. Белый лист контрастирует и фокусирует внимание. Зелёный — единственный цветовой акцент, для функциональных элементов.</p>
+      </div>
+      <ul class="feature-list">
+        <li>Скругления: 8–12px для карточек и полей ввода</li>
+        <li>Тень листа A4: <code>0 4px 40px rgba(0,0,0,0.6)</code></li>
+        <li>Переходы: 150ms ease для hover-состояний</li>
+        <li>Адаптивность: лист A4 на мобильных уменьшается до 100% ширины viewport с боковыми отступами 16px</li>
+      </ul>
+    </section>
+
+    <!-- ── 7. STACK ── -->
+    <section class="section" id="stack">
+      <div class="section-number">07 / Стек</div>
+      <h2 class="section-title">Технологический стек</h2>
+
+      <h3 class="sub-title">Frontend</h3>
+      <div class="code-block">
+<span class="comment">// Рекомендуемый стек фронтенда</span>
+<span class="key">Framework</span>: <span class="val">React 18 + Vite</span>
+<span class="key">Styling</span>:   <span class="val">CSS Modules или Tailwind CSS</span>
+<span class="key">HTTP</span>:      <span class="val">fetch / axios → backend API</span>
+<span class="key">UI</span>:        <span class="val">Собственные компоненты, без UI-библиотек</span>
+      </div>
+
+      <h3 class="sub-title">Backend</h3>
+      <div class="code-block">
+<span class="comment">// Рекомендуемый стек бэкенда</span>
+<span class="key">Runtime</span>:   <span class="val">Node.js 20+</span>
+<span class="key">Framework</span>: <span class="val">Express.js или Fastify</span>
+<span class="key">Scraping</span>:  <span class="val">Puppeteer (headless Chrome) — для JS-рендеринга</span>
+<span class="key">Parsing</span>:   <span class="val">Cheerio — быстрый DOM-парсинг</span>
+<span class="key">Readability</span>: <span class="val">@mozilla/readability — fallback алгоритм</span>
+<span class="key">Санитизация</span>: <span class="val">DOMPurify или sanitize-html</span>
+      </div>
+
+      <h3 class="sub-title">Развёртывание</h3>
+      <ul class="feature-list">
+        <li>Docker-контейнер с Node.js и Chromium для Puppeteer</li>
+        <li>Возможность деплоя на Railway, Render, VPS</li>
+        <li>Фронтенд: статическая сборка, CDN или тот же сервер</li>
+      </ul>
+    </section>
+
+    <!-- ── 8. API ── -->
+    <section class="section" id="api">
+      <div class="section-number">08 / API</div>
+      <h2 class="section-title">Backend API</h2>
+
+      <h3 class="sub-title">Эндпоинт извлечения</h3>
+      <div class="code-block">
+<span class="key">POST</span> <span class="val">/api/extract</span>
+
+<span class="comment">// Request body</span>
+{
+  <span class="key">"url"</span>: <span class="val">"https://example.com/article/casino-review"</span>
+}
+
+<span class="comment">// Response 200 OK</span>
+{
+  <span class="key">"title"</span>:      <span class="val">"Текст заголовка страницы"</span>,
+  <span class="key">"html"</span>:       <span class="val">"&lt;h1&gt;...&lt;/h1&gt;&lt;p&gt;...&lt;/p&gt;"</span>,  <span class="comment">// очищенный HTML</span>
+  <span class="key">"wordCount"</span>:  <span class="val">1240</span>,
+  <span class="key">"charCount"</span>:  <span class="val">8450</span>,
+  <span class="key">"sourceUrl"</span>:  <span class="val">"https://example.com/article/..."</span>
+}
+
+<span class="comment">// Response 400 — невалидный URL</span>
+<span class="comment">// Response 422 — контент не найден / пустая страница</span>
+<span class="comment">// Response 500 — ошибка рендеринга / таймаут</span>
+      </div>
+
+      <h3 class="sub-title">Параметры обработки</h3>
+      <table class="spec-table">
+        <thead>
+          <tr><th>Параметр</th><th>Значение</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Таймаут загрузки страницы</td><td>15 секунд</td></tr>
+          <tr><td>Ожидание JS-рендеринга</td><td>networkidle2 (Puppeteer)</td></tr>
+          <tr><td>Максимальный размер HTML</td><td>5 МБ</td></tr>
+          <tr><td>Кэширование</td><td>In-memory, TTL 5 мин (по URL)</td></tr>
+          <tr><td>Rate limit</td><td>10 запросов/мин на IP</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── 9. RISKS ── -->
+    <section class="section" id="risks">
+      <div class="section-number">09 / Риски</div>
+      <h2 class="section-title">Риски и ограничения</h2>
+
+      <table class="spec-table">
+        <thead>
+          <tr><th>Риск</th><th>Вероятность</th><th>Решение</th></tr>
+        </thead>
+        <tbody>
+          <tr class="risk-row-high">
+            <td>Сайт блокирует headless-браузеры (Cloudflare, antibot)</td>
+            <td><span class="tag" style="background:#3d1a1a;color:#ff6b6b;border-color:#7d2a2a">Высокая</span></td>
+            <td>User-agent ротация, поддержка прокси, возможность ввода User-Agent вручную</td>
+          </tr>
+          <tr class="risk-row-mid">
+            <td>SPA с lazy-loading — контент грузится после скролла</td>
+            <td><span class="tag" style="background:#3d2a0a;color:#ffa94d;border-color:#7d4a0a">Средняя</span></td>
+            <td>Puppeteer: auto-scroll перед парсингом</td>
+          </tr>
+          <tr class="risk-row-mid">
+            <td>Ошибочная идентификация основного контента</td>
+            <td><span class="tag" style="background:#3d2a0a;color:#ffa94d;border-color:#7d4a0a">Средняя</span></td>
+            <td>Каскад алгоритмов: article → main → text density → Readability fallback</td>
+          </tr>
+          <tr class="risk-row-low">
+            <td>Таблицы ломаются при ширине A4</td>
+            <td><span class="tag">Низкая</span></td>
+            <td>Горизонтальный скролл внутри таблицы, max-width: 100%</td>
+          </tr>
+          <tr class="risk-row-low">
+            <td>Кириллические и RTL-сайты</td>
+            <td><span class="tag">Низкая</span></td>
+            <td>UTF-8 по умолчанию, dir=auto на листе вывода</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── 10. ACCEPTANCE ── -->
+    <section class="section" id="acceptance">
+      <div class="section-number">10 / Сдача</div>
+      <h2 class="section-title">Критерии приёмки</h2>
+
+      <ul class="feature-list">
+        <li>При вставке URL страницы с явным тегом <code>&lt;article&gt;</code> — отображается только контент этого блока, без навигации и футера</li>
+        <li>Заголовки H1–H4 отображаются с визуально различимой иерархией в листе</li>
+        <li>Маркированные и нумерованные списки отображаются корректно, с сохранением вложенности</li>
+        <li>Таблицы отображаются с видимыми границами ячеек и не выходят за ширину листа A4</li>
+        <li>Кнопка «Копировать» копирует plain text без HTML-тегов</li>
+        <li>Счётчик слов и знаков корректно обновляется после каждого запроса</li>
+        <li>Ошибка при невалидном URL отображается в виде уведомления без краша приложения</li>
+        <li>Интерфейс работает корректно в Chrome 120+, Firefox 120+, Safari 17+</li>
+        <li>Время ответа для средней страницы (200–500 КБ HTML) не превышает 8 секунд</li>
+        <li>Приложение задеплоено и доступно по URL (не localhost)</li>
+      </ul>
+    </section>
+
+    <!-- ── 11. TIMELINE ── -->
+    <section class="section" id="timeline">
+      <div class="section-number">11 / Сроки</div>
+      <h2 class="section-title">Примерный план разработки</h2>
+
+      <ol class="step-list">
+        <li>
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <strong>Backend-ядро (3–4 дня)</strong>
+            <span>Node.js-сервер, Puppeteer, алгоритм фильтрации DOM, эндпоинт /api/extract, тесты на 10+ реальных URL</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <strong>Frontend-оболочка (2–3 дня)</strong>
+            <span>React-приложение, URL-строка, лист A4, типографика, тёмная тема, счётчик слов</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <strong>Интеграция и отладка (1–2 дня)</strong>
+            <span>Связка фронт + бэк, обработка ошибок, edge cases, кроссбраузерное тестирование</span>
+          </div>
+        </li>
+        <li>
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <strong>Деплой и финальная проверка (1 день)</strong>
+            <span>Docker-сборка, деплой, smoke-тест на 20 реальных URL разных типов сайтов</span>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout" style="margin-top:28px">
+        <p><strong>Итого:</strong> ~7–10 рабочих дней для MVP. Функция копирования и экспорт в DOCX могут быть добавлены в следующей итерации.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  Competitor Text Extractor · ТЗ v1.0 · Конфиденциальный документ
+</footer>
+
+<script>
+  // Active nav link on scroll
+  const sections = document.querySelectorAll('.section[id]');
+  const links = document.querySelectorAll('.nav-link');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+  sections.forEach(s => obs.observe(s));
+
+  links.forEach(l => l.addEventListener('click', e => {
+    e.preventDefault();
+    document.querySelector(l.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+  }));
+</script>
+</body>
+</html>

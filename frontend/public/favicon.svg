@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#111111"/>
+  <!-- T letter - top bar + left vertical -->
+  <rect x="64" y="80" width="180" height="96" rx="4" fill="#BFFF00"/>
+  <rect x="64" y="192" width="96" height="160" rx="4" fill="#BFFF00"/>
+  <!-- C letter - top bar + left bar + bottom-left quarter circle -->
+  <rect x="268" y="80" width="180" height="96" rx="4" fill="#BFFF00"/>
+  <rect x="268" y="192" width="96" height="76" rx="4" fill="#BFFF00"/>
+  <path d="M268 268 L268 448 A180 180 0 0 0 448 268 L364 268 A96 96 0 0 1 268 364 Z" fill="#BFFF00"/>
+</svg>
