@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import EditorToolbar from './EditorToolbar'
 import './SplitView.css'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? 'http://localhost:3001' : '')
 
 export default function SplitView({ result, sourceUrl, onClose }) {
   const leftPanelRef = useRef(null)
