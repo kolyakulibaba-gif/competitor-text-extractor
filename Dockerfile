@@ -1,8 +1,6 @@
 FROM node:20-slim
 
-# Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
-# Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
-# installs, work.
+# Install latest chrome dev package and fonts
 RUN apt-get update \
     && apt-get install -y wget gnupg \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
@@ -12,20 +10,27 @@ RUN apt-get update \
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-# Tell Puppeteer to skip installing Chrome/Chromium. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-RUN npm ci
+# Copy dependency files
+COPY frontend/package*.json ./frontend/
+COPY backend/package*.json ./backend/
 
-COPY . .
+# Install dependencies
+RUN cd frontend && npm ci
+RUN cd backend && npm ci
 
-# Build the frontend (using the postinstall script we will add)
-RUN npm run build:frontend
+# Copy full source
+COPY frontend/ ./frontend/
+COPY backend/ ./backend/
 
+# Build frontend
+RUN cd frontend && npm run build
+
+# Start backend
+WORKDIR /usr/src/app/backend
 EXPOSE 3001
-
 CMD ["npm", "start"]
