@@ -112,9 +112,15 @@ app.get('/api/proxy', async (req, res) => {
       'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     );
 
-    await page.goto(trimmedUrl, { waitUntil: 'networkidle2', timeout: 20000 });
-
-    // Wait for content to settle
+    try {
+      await page.goto(trimmedUrl, { waitUntil: 'domcontentloaded', timeout: 15000 });
+    } catch (navErr) {
+      if (navErr.message && navErr.message.toLowerCase().includes('time')) {
+        console.warn(`[PROXY] Timeout navigating to ${trimmedUrl}, continuing with loaded content...`);
+      } else {
+        throw navErr;
+      }
+    }    // Wait for content to settle
     await new Promise(r => setTimeout(r, 1000));
 
     let html = await page.content();
