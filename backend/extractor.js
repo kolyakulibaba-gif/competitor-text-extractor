@@ -318,7 +318,7 @@ async function extractText(url) {
     try {
       await page.goto(url, { waitUntil: 'networkidle2', timeout: 20000 });
     } catch (navErr) {
-      if (navErr.message && navErr.message.includes('Timed out')) {
+      if (navErr.message && navErr.message.toLowerCase().includes('time')) {
         console.log('[NAV] networkidle2 timed out — continuing with loaded content...');
         // Page may still have usable content even if network is still active
       } else {
